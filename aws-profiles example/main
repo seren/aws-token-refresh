@@ -1,0 +1,7 @@
+[mainuser]
+# This is an example of an IAM user credentials profile called mainuser. These credentials are enough to request STS credentials (using MFA) that then have rights to request role credentials without using MFA. Note: the region line is optional.
+region = us-east-1
+aws_access_key_id = AKIAJHEGCHEXAMPLE
+aws_secret_access_key = fSU2a3BdmxVX5cX0+HFw6IBcNaEXAMPLEKEY
+mfa_id = arn:aws:iam::12342567890:mfa/mainuser
+account_id = 1234256789
