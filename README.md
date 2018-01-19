@@ -9,15 +9,15 @@ These scripts retrieve temporary IAM user credentials (with MFA) or role credent
 - An MFA (multi-factor authentication) token generator such as:
 	- [Google Authenticator](https://www.google.com/search?q=google+authenticator)
 	- [Authy](https://authy.com/download/)
-	- Something else (there are [many options](https://www.google.com/search?q=2-factor+authentication+download))
+	- Something else (there are [many options](https://www.google.com/search?q=2-factor+authentication+download) including CLI-based tools)
 
 
-## Usage:
-- Get credentials: `token <profilename>`
-- Export credentials into environment variables: `awsenv <profilename>`
+## Usage
+- To get credentials: `token <profilename>`
+- To export credentials into environment variables: `awsenv <profilename>`
 
 
-## Getting started:
+## Getting started
 
 1. Clone the git repo into a local directory (we'll be using `~/aws-scripts` in these examples):
 
@@ -79,3 +79,10 @@ These scripts retrieve temporary IAM user credentials (with MFA) or role credent
 		- `account_id` - The account ID that the role is in. Used, along with the role_name, to form the role ARN
 		- `master_profile` - Optional. The name of the profile to use to assume this role. Can be used to override the default `MASTER_PROFILE` setting in the `aws-token-or-role-refresh.sh` script.
 		- `region` - Optional. Useful if you always use the same region, or want to use different nicknames for different regions
+
+
+## AWS Web Console Tips
+
+If you've just started using roles, the AWS Web Console has a nice feature where you can switch between them. It can remember up to 5 recently switched-to roles. To add a role, choose the `Switch Role` option in the user menu in the upper-right menu bar of the web console page, or enter a url like so:
+
+[https://signin.aws.amazon.com/switchrole?account=1234567890&roleName=myadminrole&displayName=account1-admin](https://signin.aws.amazon.com/switchrole?account=1234567890&roleName=myadminrole&displayName=account1-admin)
