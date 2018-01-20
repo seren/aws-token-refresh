@@ -1,6 +1,7 @@
 ## Overview
 
-These scripts retrieve temporary IAM user credentials (with MFA) or role credentials from AWS STS, and generate standard `credentials` and `config` files for use with AWS CLI, Boto, or anything else that uses AWS profiles.
+This script retrieves temporary IAM user credentials (with MFA) or role credentials from AWS STS, and generates or updates standard `credentials` and `config` files for use with AWS CLI, Boto, or anything else that uses AWS profiles.
+
 
 ## Requirements
 
@@ -42,6 +43,8 @@ These scripts retrieve temporary IAM user credentials (with MFA) or role credent
 
 5. Create profile files in `~/.aws/aws-profiles/`. These files are what are used to generate the `credentials` file (for the aws cli tools) and `config` file (formated slightly differently for boto). They should have at least the following information:
 
+	Note: You can also create profiles for non-IAM accounts or accounts that don't use MFA. They'll be added to the `credentials` and `config` files.  
+
 	- **For an IAM user profile:**
 
 		~~~
@@ -79,6 +82,13 @@ These scripts retrieve temporary IAM user credentials (with MFA) or role credent
 		- `account_id` - The account ID that the role is in. Used, along with the role_name, to form the role ARN
 		- `master_profile` - Optional. The name of the profile to use to assume this role. Can be used to override the default `MASTER_PROFILE` setting in the `aws-token-or-role-refresh.sh` script.
 		- `region` - Optional. Useful if you always use the same region, or want to use different nicknames for different regions
+
+
+## Notes
+
+- The script only modifies individual profile sections of the `credentials` file, so you can add extra profiles by hand to `credentials` without them being overwritten.
+
+- The `config` file is recreated from the `credentials` file during each run, so any customization should be done in the `credentials` file.
 
 
 ## AWS Web Console Tips
