@@ -21,7 +21,7 @@ LOG_LEVEL=INFO
 # LOG_LEVEL=DEBUG
 
 # Paths
-AWS_CLI="/usr/local/bin/aws"
+AWS_CLI="$(which aws)"
 AWS_DIR="${HOME}/.aws"
 CREDENTIALS_FILE="${AWS_DIR}/credentials"
 BOTO_CONFIG_FILE="${AWS_DIR}/config"
@@ -191,8 +191,8 @@ func_get_new_token () {
   AWS_SESSION_TOKEN=`echo ${JSON_SESSION_INFO} | jq '.Credentials.SessionToken' | tr -d '"'`
   AWS_SESSION_TOKEN_EXPIRATION=`echo ${JSON_SESSION_INFO} | jq '.Credentials.Expiration' | tr -d '"'`
   log_debug "Set 'AWS_ACCESS_KEY_ID' to '${AWS_ACCESS_KEY_ID}'"
-  log_debug "Set 'AWS_SECRET_ACCESS_KEY' to '${AWS_SECRET_ACCESS_KEY}'"
-  log_debug "Set 'AWS_SESSION_TOKEN' to '${AWS_SESSION_TOKEN}'"
+  log_debug "Set 'AWS_SECRET_ACCESS_KEY' to '${AWS_SECRET_ACCESS_KEY:0:25}<redacted>'"
+  log_debug "Set 'AWS_SESSION_TOKEN' to '${AWS_SESSION_TOKEN:0:100}<redacted>'"
   log_debug "Set 'AWS_SESSION_TOKEN_EXPIRATION' to '${AWS_SESSION_TOKEN_EXPIRATION}'"
 
   return 0
@@ -274,8 +274,8 @@ func_get_role_token () {
   AWS_SESSION_TOKEN=`echo ${JSON_SESSION_INFO} | jq '.Credentials.SessionToken' | tr -d '"'`
   AWS_SESSION_TOKEN_EXPIRATION=`echo ${JSON_SESSION_INFO} | jq '.Credentials.Expiration' | tr -d '"'`
   log_debug "Set 'AWS_ACCESS_KEY_ID' to '${AWS_ACCESS_KEY_ID}'"
-  log_debug "Set 'AWS_SECRET_ACCESS_KEY' to '${AWS_SECRET_ACCESS_KEY}'"
-  log_debug "Set 'AWS_SESSION_TOKEN' to '${AWS_SESSION_TOKEN}'"
+  log_debug "Set 'AWS_SECRET_ACCESS_KEY' to '${AWS_SECRET_ACCESS_KEY:0:25}<redacted>'"
+  log_debug "Set 'AWS_SESSION_TOKEN' to '${AWS_SESSION_TOKEN:0:100}<redacted>'"
   log_debug "Set 'AWS_SESSION_TOKEN_EXPIRATION' to '${AWS_SESSION_TOKEN_EXPIRATION}'"
 
   return 0
@@ -373,10 +373,10 @@ chmod 600 "${ENVFILE}"
 
 # Sanity checks
 if [ -z ${2-} ]; then
-  log_error "You need to pass a credential type (token or role) and a profile name as arguments"
+  log_error "You need to pass an action type (token or awsenv) and a profile name as arguments"
   log_error ""
   log_error "Example:"
-  log_error "   $0 role my-account-admin-role"
+  log_error "   $0 token my-account-admin-role"
   log_error ""
   func_list_profiles
   exit 1
