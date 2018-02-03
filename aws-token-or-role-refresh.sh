@@ -47,8 +47,19 @@ if [ "$XTRACE" == "1" ] || [ "$XTRACE" == "true" ] ; then
   PS4="$(tput setaf 2)COMMAND: $(tput sgr0)"
 fi
 
-declare -A log_levels
-log_levels=([DEBUG]=0 [INFO]=1 [WARN]=2 [ERROR]=3)
+## Bash < 4 doesn't have associative arrays, so we can't use this
+# declare -A log_levels
+# log_levels=([DEBUG]=0 [INFO]=1 [WARN]=2 [ERROR]=3)
+function log_levels ()
+{
+  case $1 in
+    DEBUG)  return 0 ;;
+    INFO)   return 1 ;;
+    WARN)   return 2 ;;
+    ERROR)  return 3 ;;
+    *)      echo "Invalid log level: $1" && exit 1;;
+  esac
+}
 
 function loggable_timestamp {
   date "+%F %T"
@@ -56,8 +67,12 @@ function loggable_timestamp {
 
 function check_log_level {
   local global_log_level_name=${LOG_LEVEL:-INFO}
-  local global_log_level=${log_levels[$global_log_level_name]}
-  local event_log_level=${log_levels[$1]}
+  # local global_log_level=${log_levels[$global_log_level_name]}
+  # local event_log_level=${log_levels[$1]}
+  log_levels $global_log_level_name
+  local global_log_level=$?
+  log_levels $1
+  local event_log_level=$?
   [ $global_log_level -le $event_log_level ] && return 0 || return 1
 }
 
@@ -308,7 +323,7 @@ EOF
 func_append_profile_to_credentials_file () {
   local PROFILE_NAME=$1
   local PROFILE_SOURCE_FILE="${CREDENTIALS_SOURCE_DIR}/${PROFILE_NAME}"
-  func_check_if_profile_source_exists "${PROFILE_SOURCE_FILE}"
+  func_check_if_profile_source_valid "${PROFILE_SOURCE_FILE}"
   echo '' >> ${CREDENTIALS_FILE}
   cat ${PROFILE_SOURCE_FILE} >> ${CREDENTIALS_FILE}
   echo "### This profile section was auto-generated from '${PROFILE_SOURCE_FILE}' ###" >> ${CREDENTIALS_FILE}
@@ -319,19 +334,23 @@ func_append_profile_to_credentials_file () {
 func_append_profile_without_creds_to_credentials_file () {
   local PROFILE_NAME=$1
   local PROFILE_SOURCE_FILE="${CREDENTIALS_SOURCE_DIR}/${PROFILE_NAME}"
-  func_check_if_profile_source_exists "${PROFILE_SOURCE_FILE}"
+  func_check_if_profile_source_valid "${PROFILE_SOURCE_FILE}"
   echo '' >> ${CREDENTIALS_FILE}
   cat ${PROFILE_SOURCE_FILE} | sed -e '/aws_access_key_id/d' -e '/aws_secret_access_key/d' >> ${CREDENTIALS_FILE}
   echo "### This profile section was auto-generated from '${PROFILE_SOURCE_FILE}' ###" >> ${CREDENTIALS_FILE}
   log_debug "Appended unaltered ${PROFILE_SOURCE_FILE}"
 }
 
-# Simple helper for sanity checking that the profile source file exists
-func_check_if_profile_source_exists ()
+# Simple helper for sanity checking that the profile source file exists and is sane
+func_check_if_profile_source_valid ()
 {
   if ! [ -f ${1} ]; then
     log_error "The credentials source (${1}) file doesn't exist"
     func_list_profiles
+    exit 1
+  fi
+  if `grep '^\['"${1}"'\]$' ${1}`; then
+    log_error "The profile heading '${1}' was not found in the file '${1}'"
     exit 1
   fi
 }
@@ -391,7 +410,7 @@ if ! [ -d ${CREDENTIALS_SOURCE_DIR} ]; then
 fi
 
 PROFILE_SOURCE_FILE="${CREDENTIALS_SOURCE_DIR}/${PROFILE_NAME}"
-func_check_if_profile_source_exists ${PROFILE_SOURCE_FILE}
+func_check_if_profile_source_valid ${PROFILE_SOURCE_FILE}
 
 # Create a new credentials file if it's missing
 if ! [ -f ${CREDENTIALS_FILE} ]; then

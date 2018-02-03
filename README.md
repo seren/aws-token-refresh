@@ -3,6 +3,7 @@
 This script retrieves temporary IAM user credentials (with MFA) or role credentials from AWS STS, and generates or updates standard `credentials` and `config` files for use with AWS CLI, Boto, or anything else that uses AWS profiles.
 
 
+
 ## Requirements
 
 - Bash
@@ -14,14 +15,20 @@ This script retrieves temporary IAM user credentials (with MFA) or role credenti
   - Something else (there are [many options](https://www.google.com/search?q=2-factor+authentication+download) including CLI-based tools. Keywords to search for include: TOTP, MFA, and 2FA)
 
 
+
 ## Usage
 - To get credentials: `token <profilename>`
 - To export credentials into environment variables: `awsenv <profilename>`
 
 
+
 ## Getting started
 
 **Warning:** The `config` file is recreated each time. Any customizations should be done in the `credentials` file or the profile files.
+
+### File and shell changes
+
+Run the `setup.sh` script or perform the following four steps manually:
 
 1. Clone the git repo into a local directory (we'll be using `~/aws-token-refresh` in these examples):
 
@@ -30,21 +37,24 @@ This script retrieves temporary IAM user credentials (with MFA) or role credenti
   ~~~
 
 2. Create a directory for credentials (most tools expect them to be in `~/.aws`). Create a `aws-profiles` directory within:
-
+	
   ~~~
   mkdir -p ${HOME}/.aws/aws-profiles
   chmod 700 ${HOME}/.aws/aws-profiles
   ~~~
 
 3. In `profile-additions.sh`, update the `AWS_SCRIPTS_DIR` value file to the directory containing the scripts (ex. `${HOME}/aws-token-refresh`).
-
+	
 4. In your shell's login profile (usually `.bash_profile`, if you use bash), source `profile-additions.sh`:
-
+	
   ~~~
-  echo 'source "~/aws-token-refresh/profile-additions.sh"' >> ${HOME}/.profile
+  echo 'source "${HOME}/aws-token-refresh/profile-additions.sh"' >> ${HOME}/.profile
   ~~~
 
-5. Create profile files in `~/.aws/aws-profiles/`. These files are what are used to generate the `credentials` file (for the aws cli tools) and `config` file (formated slightly differently for boto). They should have at least the following information:
+
+### Create the IAM profiles
+
+Create profile files in `~/.aws/aws-profiles/`. These files are what are used to generate the `credentials` file (for the aws cli tools) and `config` file (formated slightly differently for boto). They should have at least the following information:
 
   Note: You can also create profiles for non-IAM accounts or accounts that don't use MFA. They'll be added to the `credentials` and `config` files.  
 
@@ -87,11 +97,13 @@ This script retrieves temporary IAM user credentials (with MFA) or role credenti
     - `region` - Optional. Useful if you always use the same region, or want to use different nicknames for different regions
 
 
+
 ## Notes
 
 - The script only modifies individual profile sections of the `credentials` file, so you can add extra profiles by hand to `credentials` without them being overwritten.
 
 - The `config` file is recreated from the `credentials` file during each run, so any customization should be done in the `credentials` file.
+
 
 
 ## AWS Web Console Tips

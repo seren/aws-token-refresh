@@ -1,4 +1,5 @@
-AWS_SCRIPTS_DIR="${HOME}/scripts/aws"
+AWS_SCRIPTS_DIR="${HOME}/PATH-TO-WHERE-YOU-DOWNLOADED/aws-token-refresh"
+
 AWS_CONF_DIR="${HOME}/.aws"
 
 clear_aws_env ()
