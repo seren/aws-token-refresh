@@ -160,6 +160,21 @@ func_update_boto_config () {
   sed 's/^\[/[profile /' ${CREDENTIALS_FILE} > ${BOTO_CONFIG_FILE}
 }
 
+func_extract_session_credentials () {
+  log_debug "Json session info is:"
+  log_debug "$JSON_SESSION_INFO"
+
+  # Extract values from STS response
+  AWS_ACCESS_KEY_ID=`echo ${JSON_SESSION_INFO} | sed -n 's/.* "AccessKeyId": "\([^"]*\).*/\1/p'`
+  AWS_SECRET_ACCESS_KEY=`echo ${JSON_SESSION_INFO} | sed -n 's/.*"SecretAccessKey": "\([^"]*\).*/\1/p'`
+  AWS_SESSION_TOKEN=`echo ${JSON_SESSION_INFO} | sed -n 's/.*"SessionToken": "\([^"]*\).*/\1/p'`
+  AWS_SESSION_TOKEN_EXPIRATION=`echo ${JSON_SESSION_INFO} | sed -n 's/.*"Expiration": "\([^"]*\).*/\1/p'`
+  log_debug "Set 'AWS_ACCESS_KEY_ID' to '${AWS_ACCESS_KEY_ID}'"
+  log_debug "Set 'AWS_SECRET_ACCESS_KEY' to '${AWS_SECRET_ACCESS_KEY:0:25}<redacted>'"
+  log_debug "Set 'AWS_SESSION_TOKEN' to '${AWS_SESSION_TOKEN:0:100}<redacted>'"
+  log_debug "Set 'AWS_SESSION_TOKEN_EXPIRATION' to '${AWS_SESSION_TOKEN_EXPIRATION}'"
+}
+
 # Gets a new session token using normal credentials and MFA
 func_get_new_token () {
   local PROFILE_NAME=$1
@@ -197,19 +212,7 @@ func_get_new_token () {
   log_debug "Calling STS with mfa token ${MFA_TOKEN}, access_key ${MASTER_KEY}, and serial-number ${MFA_ID}"
   log_debug "${AWS_CLI} --profile ${PROFILE_NAME} sts get-session-token --serial-number ${MFA_ID} --token-code ${MFA_TOKEN}"
   JSON_SESSION_INFO=$(${AWS_CLI} --profile ${PROFILE_NAME} sts get-session-token --serial-number ${MFA_ID} --token-code ${MFA_TOKEN})
-  log_debug "Json session info is:"
-  log_debug "`echo $JSON_SESSION_INFO | jq '.[]'`"
-
-  # Extract values from STS response
-  AWS_ACCESS_KEY_ID=`echo ${JSON_SESSION_INFO} | jq '.Credentials.AccessKeyId' | tr -d '"'`
-  AWS_SECRET_ACCESS_KEY=`echo ${JSON_SESSION_INFO} | jq '.Credentials.SecretAccessKey' | tr -d '"'`
-  AWS_SESSION_TOKEN=`echo ${JSON_SESSION_INFO} | jq '.Credentials.SessionToken' | tr -d '"'`
-  AWS_SESSION_TOKEN_EXPIRATION=`echo ${JSON_SESSION_INFO} | jq '.Credentials.Expiration' | tr -d '"'`
-  log_debug "Set 'AWS_ACCESS_KEY_ID' to '${AWS_ACCESS_KEY_ID}'"
-  log_debug "Set 'AWS_SECRET_ACCESS_KEY' to '${AWS_SECRET_ACCESS_KEY:0:25}<redacted>'"
-  log_debug "Set 'AWS_SESSION_TOKEN' to '${AWS_SESSION_TOKEN:0:100}<redacted>'"
-  log_debug "Set 'AWS_SESSION_TOKEN_EXPIRATION' to '${AWS_SESSION_TOKEN_EXPIRATION}'"
-
+  func_extract_session_credentials
   return 0
 }
 
@@ -280,19 +283,7 @@ func_get_role_token () {
     log_info "Renewed the master profile's credentials. Trying to get role credentials again."
     JSON_SESSION_INFO=$(${AWS_CLI} --profile ${MASTER_PROFILE} sts assume-role --role-arn ${ROLE_ARN} --role-session-name "${LOGNAME}-${DATESTAMP}")
   fi
-  log_debug "Json session info is:"
-  log_debug "``echo $JSON_SESSION_INFO | jq '.[]'``"
-
-  # Extract values from STS response
-  AWS_ACCESS_KEY_ID=`echo ${JSON_SESSION_INFO} | jq '.Credentials.AccessKeyId' | tr -d '"'`
-  AWS_SECRET_ACCESS_KEY=`echo ${JSON_SESSION_INFO} | jq '.Credentials.SecretAccessKey' | tr -d '"'`
-  AWS_SESSION_TOKEN=`echo ${JSON_SESSION_INFO} | jq '.Credentials.SessionToken' | tr -d '"'`
-  AWS_SESSION_TOKEN_EXPIRATION=`echo ${JSON_SESSION_INFO} | jq '.Credentials.Expiration' | tr -d '"'`
-  log_debug "Set 'AWS_ACCESS_KEY_ID' to '${AWS_ACCESS_KEY_ID}'"
-  log_debug "Set 'AWS_SECRET_ACCESS_KEY' to '${AWS_SECRET_ACCESS_KEY:0:25}<redacted>'"
-  log_debug "Set 'AWS_SESSION_TOKEN' to '${AWS_SESSION_TOKEN:0:100}<redacted>'"
-  log_debug "Set 'AWS_SESSION_TOKEN_EXPIRATION' to '${AWS_SESSION_TOKEN_EXPIRATION}'"
-
+  func_extract_session_credentials
   return 0
 }
 
