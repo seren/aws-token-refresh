@@ -8,9 +8,6 @@ set -euo pipefail
 #################
 # User vars
 
-# The name of the profile is allowed to assume roles. Can be overriden by the "master_profile" value in the profile files.
-DEFAULT_MASTER_PROFILE=
-
 TOKEN_PREEXPIRATION_HOURS=2 # Hours before a token expires to try to get a fresh one instead of reusing it (tokens expire after 12 hours by default)
                             # Note: This doesn't apply to role tokens which expire after one hour max.
 
@@ -197,7 +194,7 @@ func_get_new_token () {
   if [ -n "${MFA_PROGRAM}" ]; then
     MFA_TOKEN=$(${MFA_PROGRAM} "${PROFILE_NAME}")
   else
-    read -p "Enter the MFA code for ${PROFILE_NAME}: " -r
+    read -p "Enter the MFA code for '${PROFILE_NAME}': " -r
     if [ -z $REPLY ]; then
       echo "I need an MFA code to continue."
       exit 1
@@ -224,12 +221,9 @@ func_update_role_credentials () {
   if [ -n "${RETVAL:-}" ]; then
     MASTER_PROFILE=${RETVAL}
   else
-    MASTER_PROFILE="$DEFAULT_MASTER_PROFILE"
-  fi
-  if [ -z "${MASTER_PROFILE}" ]; then
-    log_error "Couldn't find a user profile to use for role assumption."
-    log_error "Either enter fill out the 'DEFAULT_MASTER_PROFILE' value in this script,"
-    log_error "or add a 'master_profile = xxxxx' line to your role profile ("${CREDENTIALS_SOURCE_DIR}/${PROFILE_NAME}")"
+    log_error "The profile '${ROLE_PROFILE} is a role, but I can't assume the role since I don't know what user profile has permissions to do so."
+    log_error "Specify it in the role profile file ("${CREDENTIALS_SOURCE_DIR}/${PROFILE_NAME}"),"
+    log_error "in the form: 'master_profile = xxxxx'"
     exit 1
   fi
   # Remove the existing profile to remove old session tokens

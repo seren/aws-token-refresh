@@ -93,7 +93,7 @@ Create profile files in `~/.aws/aws-profiles/`. These files are what are used to
     - `# Blah` - You may place comment lines within the profile
     - `role_name` - The name of the role to assume. NOTE: The presence of this is also used to determine whether a profile is a "user" profile or a "role" profile.
     - `account_id` - The account ID that the role is in. Used, along with the role_name, to form the role ARN
-    - `master_profile` - Optional. The name of the profile to use to assume this role. Can be used to override the default `MASTER_PROFILE` setting in the `aws-token-or-role-refresh.sh` script.
+    - `master_profile` - The name of the user profile which has permissions to assume this role.
     - `region` - Optional. Useful if you always use the same region, or want to use different nicknames for different regions
 
 
