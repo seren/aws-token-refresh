@@ -273,10 +273,13 @@ func_get_role_token () {
   # Get a fresh sts session token
   log_debug "Calling STS using profile '${MASTER_PROFILE}' to assume role '${ROLE_ARN}'"
   set +e  # It's ok for the next line to fail; we can recover
-  JSON_SESSION_INFO=$(${AWS_CLI} --profile ${MASTER_PROFILE} sts assume-role --role-arn ${ROLE_ARN} --role-session-name "${LOGNAME}-${DATESTAMP}")
+  result=$(${AWS_CLI} --profile ${MASTER_PROFILE} sts assume-role --role-arn ${ROLE_ARN} --role-session-name "${LOGNAME}-${DATESTAMP}" 2>&1)
   ret=$?
   set -e
-  if ! [ $ret == 0 ]; then
+  if [ $ret == 0 ]; then
+    JSON_SESSION_INFO="$result"
+  else
+    log_debug "${result}"
     log_info "The master profile's temporary IAM credentials are expired. Renewing them..."
     log_info ""
     func_update_token "${MASTER_PROFILE}"
