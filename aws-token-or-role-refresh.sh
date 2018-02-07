@@ -342,13 +342,15 @@ func_append_profile_without_creds_to_credentials_file () {
 # Simple helper for sanity checking that the profile source file exists and is sane
 func_check_if_profile_source_valid ()
 {
-  if ! [ -f ${1} ]; then
-    log_error "The credentials source (${1}) file doesn't exist"
+  src_filepath="$1"
+  src_filename=$(basename ${src_filepath})
+  if ! [ -f ${src_filepath} ]; then
+    log_error "The credentials source (${src_filepath}) file doesn't exist"
     func_list_profiles
     exit 1
   fi
-  if `grep '^\['"${1}"'\]$' ${1}`; then
-    log_error "The profile heading '${1}' was not found in the file '${1}'"
+  if ! $(grep -q '^\['"${src_filename}"'\]$' ${src_filepath}); then
+    log_error "The profile name '${src_filename}' was not found in the file '${src_filepath}'"
     exit 1
   fi
 }
