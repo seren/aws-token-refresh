@@ -160,6 +160,7 @@ func_update_boto_config () {
   sed 's/^\[/[profile /' ${CREDENTIALS_FILE} > ${BOTO_CONFIG_FILE}
 }
 
+# Assigns session cred values to variables from a json blob (assuming the json isn't all on one line since we're using sed instead of jq)
 func_extract_session_credentials () {
   log_debug "Json session info is:"
   log_debug "$JSON_SESSION_INFO"
