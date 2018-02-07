@@ -324,6 +324,7 @@ func_append_profile_to_credentials_file () {
   cat ${PROFILE_SOURCE_FILE} >> ${CREDENTIALS_FILE}
   echo "### This profile section was auto-generated from '${PROFILE_SOURCE_FILE}' ###" >> ${CREDENTIALS_FILE}
   log_debug "Appended unaltered ${PROFILE_SOURCE_FILE}"
+  func_check_no_dups
 }
 
 # Appends a profile (without AWS credentials) to profile
@@ -335,6 +336,7 @@ func_append_profile_without_creds_to_credentials_file () {
   cat ${PROFILE_SOURCE_FILE} | sed -e '/aws_access_key_id/d' -e '/aws_secret_access_key/d' >> ${CREDENTIALS_FILE}
   echo "### This profile section was auto-generated from '${PROFILE_SOURCE_FILE}' ###" >> ${CREDENTIALS_FILE}
   log_debug "Appended unaltered ${PROFILE_SOURCE_FILE}"
+  func_check_no_dups
 }
 
 # Simple helper for sanity checking that the profile source file exists and is sane
@@ -380,6 +382,16 @@ EOF
 chmod 600 "${ENVFILE}"
 }
 
+# Make sure the credentials file contains no duplicate entries
+func_check_no_dups () {
+  dups=$(grep '\[' ${CREDENTIALS_FILE} | sort | uniq -d | xargs )
+  if [ -n "${dups}" ]; then
+    log_error "Duplicate profile names found in credentials file (${CREDENTIALS_FILE}):"
+    log_error " ${dups}"
+    log_error "Please fix this and, if necessary, your source files (${CREDENTIALS_SOURCE_DIR}/)."
+    exit 1
+  fi
+}
 
 
 
@@ -417,8 +429,8 @@ if ! [ -f ${CREDENTIALS_FILE} ]; then
     echo '' >> ${CREDENTIALS_FILE}
   done
   log_info "${CREDENTIALS_FILE} initialized."
+  func_check_no_dups
 fi
-
 
 if func_is_role_profile; then
   func_update_role_credentials "${PROFILE_NAME}"
