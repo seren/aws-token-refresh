@@ -294,7 +294,8 @@ func_get_role_token () {
 # Needed to clean out old profile info before added refreshed info
 func_remove_profile_from_credentials_file () {
   local PROFILE_NAME=$1
-  sed -i.bak -e '/./{H;$!d;}' -e 'x;/\['"${PROFILE_NAME}"'\]/d;' ${CREDENTIALS_FILE}
+  sed -e '/./{H;$!d;}' -e 'x;/\['"${PROFILE_NAME}"'\]/d;' ${CREDENTIALS_FILE} | sed '/./,$!d' > ${CREDENTIALS_FILE}.bak
+  cat ${CREDENTIALS_FILE}.bak > ${CREDENTIALS_FILE}
   rm ${CREDENTIALS_FILE}.bak
   log_debug "Removed profile '${PROFILE_NAME}' from ${CREDENTIALS_FILE}"
   return 0
