@@ -3,10 +3,15 @@
 set -ueo pipefail
 set -x
 
-read -p "Where do you want to store the scripts? (ex. ~/Documents/aws-scripts) " -r
-if [[ -n $REPLY ]]; then
-  PARENTDIR="$( unset CDPATH && cd "${REPLY/#\~/$HOME}" && pwd -P )"
-fi
+REPLY=''
+while [[ -z $REPLY ]]; do
+  read -p "Where do you want to store the scripts? (ex. ~/Documents/aws-scripts) " -r
+  if [[ -z $REPLY ]]; then
+    echo "You need to enter something."
+  else
+    PARENTDIR="$( unset CDPATH && cd "${REPLY/#\~/$HOME}" && pwd -P )"
+  fi
+done
 
 if ! [ -d "${PARENTDIR}" ]; then
   echo ""${PARENTDIR}" doesn't exist. Creating it..."
@@ -26,7 +31,8 @@ echo 'AWS_SCRIPTS_DIR="${HOME}/'"${DIR}" > profile-additions.sh
 sed '1d' profile-additions.bak >> profile-additions.sh
 rm profile-additions.bak
 
-echo 'source "'"${DIR}"'/profile-additions.sh"' >> ${HOME}/.profile
-# echo 'source "'"${DIR}"'/profile-additions.sh"' >> ${HOME}/.bash_login
+echo "Adding 'source "'"'"${DIR}"'"'"/profile-additions.sh' to ${HOME}/.bash_login"
+echo "If you don't use bash, add it to the your shell's login file."
+echo 'source "'"${DIR}"'/profile-additions.sh"' >> ${HOME}/.bash_login
 
 open .
