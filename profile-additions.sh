@@ -28,7 +28,7 @@ token ()
 awsenv ()
 {
     if [ "$#" -eq 0 ]; then
-        list_aws_accts
+        list_aws_profiles
         return
     fi
 
@@ -42,4 +42,9 @@ awsenv ()
     ${AWS_SCRIPTS_DIR}/aws-token-or-role-refresh.sh awsenv ${ENVNAME}
     source ${AWS_CONF_DIR}/current-env.txt
     echo "AWS environment variables populated for '${ENVNAME}'"
+}
+
+list_aws_profiles()
+{
+    find -L ${AWS_CONF_DIR}/aws-profiles -type f ! -name '.*' | sed 's#'"${AWS_CONF_DIR}/aws-profiles"'/.\(.*\)#\1#'
 }
