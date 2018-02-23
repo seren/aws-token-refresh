@@ -183,7 +183,7 @@ func_get_new_token () {
 
   func_get_value_from_profile_source "aws_access_key_id" "${CREDENTIALS_SOURCE_DIR}/${PROFILE_NAME}"
   if [ -z ${RETVAL-} ]; then
-    log_error "There are no IAM credential for profile '${PROFILE_NAME}'. Perhaps you meant to assume a role instead of getting credential directly?"
+    log_error "There are no IAM credentials in the profile '${PROFILE_NAME}'. Perhaps you meant to assume a role instead of getting credential directly?"
     exit 1
   fi
 
@@ -221,7 +221,7 @@ func_update_role_credentials () {
   if [ -n "${RETVAL:-}" ]; then
     MASTER_PROFILE=${RETVAL}
   else
-    log_error "The profile '${ROLE_PROFILE} is a role, but I can't assume the role since I don't know what user profile has permissions to do so."
+    log_error "The profile '${ROLE_PROFILE} is a role, but I can't assume it because there's no master profile specified."
     log_error "Specify it in the role profile file ("${CREDENTIALS_SOURCE_DIR}/${PROFILE_NAME}"),"
     log_error "in the form: 'master_profile = xxxxx'"
     exit 1
