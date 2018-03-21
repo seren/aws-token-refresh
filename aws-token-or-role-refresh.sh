@@ -442,7 +442,7 @@ else
   # If a token already exists, check if it's expired or close to expiring
     log_info "Checking if cached token is near or past expiration"
     log_debug "Found '${AWS_SESSION_TOKEN_EXPIRATION}' in ${CREDENTIALS_FILE} for profile ${PROFILE_NAME}"
-    CURRENT_TIME_EPOCH=`date -j "+%s"`
+    CURRENT_TIME_EPOCH=`date "+%s"`
     if [ "$PLATFORM" == "Darwin" ]; then
       AWS_SESSION_TOKEN_EXPIRATION_EPOCH=`date -j -f "%Y-%m-%dT%H:%M:%SZ" "${AWS_SESSION_TOKEN_EXPIRATION}" "+%s"`
       AWS_SESSION_TOKEN_REFRESH_EPOCH=`date -j -f "%Y-%m-%dT%H:%M:%SZ" -v "-${TOKEN_PREEXPIRATION_HOURS}H" "${AWS_SESSION_TOKEN_EXPIRATION}" "+%s"`
