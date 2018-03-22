@@ -447,7 +447,7 @@ else
       AWS_SESSION_TOKEN_EXPIRATION_EPOCH=`date -j -f "%Y-%m-%dT%H:%M:%SZ" "${AWS_SESSION_TOKEN_EXPIRATION}" "+%s"`
       AWS_SESSION_TOKEN_REFRESH_EPOCH=`date -j -f "%Y-%m-%dT%H:%M:%SZ" -v "-${TOKEN_PREEXPIRATION_HOURS}H" "${AWS_SESSION_TOKEN_EXPIRATION}" "+%s"`
     else
-      AWS_SESSION_TOKEN_EXPIRATION_EPOCH=`date "${AWS_SESSION_TOKEN_EXPIRATION}" "+%s"`
+      AWS_SESSION_TOKEN_EXPIRATION_EPOCH=`date -d "${AWS_SESSION_TOKEN_EXPIRATION}" "+%s"`
       AWS_SESSION_TOKEN_REFRESH_EPOCH=`date -d "${AWS_SESSION_TOKEN_EXPIRATION} -${TOKEN_PREEXPIRATION_HOURS} hours" "+%s"`
     fi
     # If the session token has expired or is close to expiring, get a new one
