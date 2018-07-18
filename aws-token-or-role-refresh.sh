@@ -129,6 +129,9 @@ func_get_value_from_profile_source () {
   key_name=${1}
   sourcefile=${2}
   RETVAL=$(sed -n 's/'"${key_name}"' = \(.*\)/\1/p' ${sourcefile})
+  if [ -z "${RETVAL}" ]; then
+    log_debug "WARNING: Couldn't find ${key_name} in ${sourcefile}"
+  fi
   return $?
 }
 
@@ -190,26 +193,36 @@ func_get_new_token () {
 
   log_info "Getting new STS session credentials for '${PROFILE_NAME}'"
 
-  # Get a fresh mfa token
-  if [ -n "${MFA_PROGRAM}" ]; then
-    MFA_TOKEN=$(${MFA_PROGRAM} "${PROFILE_NAME}")
-  else
-    read -p "Enter the MFA code for '${PROFILE_NAME}': " -r
-    if [ -z $REPLY ]; then
-      echo "I need an MFA code to continue."
-      exit 1
-    fi
-    MFA_TOKEN="${REPLY}"
-  fi
-
   # Get a fresh sts session token
   func_get_value_from_profile_source "aws_access_key_id" "${CREDENTIALS_SOURCE_DIR}/${PROFILE_NAME}"
   MASTER_KEY=${RETVAL}
   func_get_value_from_profile_source "mfa_id" "${CREDENTIALS_SOURCE_DIR}/${PROFILE_NAME}"
   MFA_ID=${RETVAL}
-  log_debug "Calling STS with mfa token ${MFA_TOKEN}, access_key ${MASTER_KEY}, and serial-number ${MFA_ID}"
-  log_debug "${AWS_CLI} --profile ${PROFILE_NAME} sts get-session-token --serial-number ${MFA_ID} --token-code ${MFA_TOKEN}"
-  JSON_SESSION_INFO=$(${AWS_CLI} --profile ${PROFILE_NAME} sts get-session-token --serial-number ${MFA_ID} --token-code ${MFA_TOKEN})
+
+  if [ -z "${MFA_ID}" ]; then
+    log_info "Trying without MFA since 'mfa_id' was not found in the configuration file: ${CREDENTIALS_SOURCE_DIR}/${PROFILE_NAME}"
+    log_debug "Calling STS with access_key ${MASTER_KEY}"
+    log_debug "${AWS_CLI} --profile ${PROFILE_NAME} sts get-session-token"
+    JSON_SESSION_INFO=$(${AWS_CLI} --profile ${PROFILE_NAME} sts get-session-token)
+  else
+    # Get a fresh mfa token
+    if [ -n "${MFA_PROGRAM}" ]; then
+      MFA_TOKEN=$(${MFA_PROGRAM} "${PROFILE_NAME}")
+    else
+      read -p "Enter the MFA code for '${PROFILE_NAME}': " -r
+      if [ -z $REPLY ]; then
+        echo "I need an MFA code to continue."
+        exit 1
+      fi
+      MFA_TOKEN="${REPLY}"
+    fi
+
+
+    log_debug "Calling STS with mfa token ${MFA_TOKEN}, access_key ${MASTER_KEY}, and serial-number ${MFA_ID}"
+    log_debug "${AWS_CLI} --profile ${PROFILE_NAME} sts get-session-token --serial-number ${MFA_ID} --token-code ${MFA_TOKEN}"
+    JSON_SESSION_INFO=$(${AWS_CLI} --profile ${PROFILE_NAME} sts get-session-token --serial-number ${MFA_ID} --token-code ${MFA_TOKEN})
+  fi
+
   func_extract_session_credentials
   return 0
 }
