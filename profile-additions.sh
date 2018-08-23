@@ -39,8 +39,8 @@ awsenv ()
     fi
 
     clear_aws_env
-    ${AWS_SCRIPTS_DIR}/aws-token-or-role-refresh.sh awsenv ${ENVNAME}
-    source ${AWS_CONF_DIR}/current-env.txt
+    ${AWS_SCRIPTS_DIR}/aws-token-or-role-refresh.sh awsenv ${ENVNAME} && \
+    source ${AWS_CONF_DIR}/current-env.txt && \
     echo "AWS environment variables populated for '${ENVNAME}'"
 }
 
