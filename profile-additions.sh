@@ -46,5 +46,5 @@ awsenv ()
 
 list_aws_profiles()
 {
-    find -L ${AWS_CONF_DIR}/aws-profiles -type f ! -name '.*' | sed 's#'"${AWS_CONF_DIR}/aws-profiles"'/.\(.*\)#\1#'
+    find -L ${AWS_CONF_DIR}/aws-profiles -type f ! -name '.*' | sed 's#'"${AWS_CONF_DIR}/aws-profiles"'/\(.*\)#\1#'
 }
