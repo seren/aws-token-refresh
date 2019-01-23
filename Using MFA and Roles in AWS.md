@@ -1,7 +1,7 @@
 # Using MFA and Roles in AWS
 
 
-**TL/DR:** For security, users have a set of permanent credentials that require MFA and can do nothing but request temporary (session) credentials. Using these temporary MFA-enabled tokens, they are allowed perform some actions and to assume roles in the main or other accounts. These assumed roles are what grant the final set of permissions the users need to perform their duties (including full administration).
+**TL/DR:** For security, user credentials require MFA and can do nothing but request temporary (session) credentials. Using these new temporary MFA-enabled credentials, they are allowed perform some actions and to assume roles in the main or other accounts. These assumed roles are what grant the final set of permissions the users need to perform their duties (including full administration).
 
 The following examples show how to retrieve and use temporary session credentials, and how to retrieve and use role (cross-account in our example) session credentials, with and without MFA. The examples use shell code, but the concepts hold true for other languages.
 
@@ -17,7 +17,8 @@ export AWS_ACCESS_KEY_ID="AKIAJFFBSWF5EXAMPLE"
 export AWS_SECRET_ACCESS_KEY="LcUFzdfyTzNAo+vuuHBxUpGwrNTJrrEXAMPLEKEY"
 
 aws --region us-east-1 ec2 describe-instances
-
+~~~
+~~~
 An error occurred (UnauthorizedOperation) when calling the DescribeInstances operation: You are not authorized to perform this operation.
 ~~~
 
@@ -67,9 +68,9 @@ aws --region us-east-1 ec2 describe-instances
 Note: There are three components to session credentials:
 
 ~~~bash
-$ export AWS_ACCESS_KEY_ID=AKIAI44QH8DHBEXAMPLE
-$ export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-$ export AWS_SESSION_TOKEN=AQoDYXdzEJr...<remainder of security token>
+export AWS_ACCESS_KEY_ID=AKIAI44QH8DHBEXAMPLE
+export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+export AWS_SESSION_TOKEN=AQoDYXdzEJr...<remainder of security token>
 ~~~
 
 
@@ -112,4 +113,4 @@ export AWS_SESSION_TOKEN=`echo ${JSON} | jq '.Credentials.SessionToken' | tr -d 
 
 *Author: Seren Thompson*
 
-*Edition: 2018-10-17*
+*Edition: 2019-01-23*
