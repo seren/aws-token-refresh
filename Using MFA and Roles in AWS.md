@@ -1,7 +1,7 @@
 # Using MFA and Roles in AWS
 
 
-**TL/DR:** For security, user credentials require MFA and can do nothing but request temporary (session) credentials. Using these new temporary MFA-enabled credentials, they are allowed perform some actions and to assume roles in the main or other accounts. These assumed roles are what grant the final set of permissions the users need to perform their duties (including full administration).
+**TL/DR:** For security, user credentials require an MFA token and can only be used to request temporary (session) credentials. Using these temporary credentials, users are allowed perform some actions and to assume roles in other accounts. These assumed roles are what grant the final set of credentials and permissions users need to perform their duties (including full administration).
 
 The following examples show how to retrieve and use temporary session credentials, and how to retrieve and use role (cross-account in our example) session credentials, with and without MFA. The examples use shell code, but the concepts hold true for other languages.
 

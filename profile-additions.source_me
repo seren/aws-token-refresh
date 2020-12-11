@@ -1,0 +1,59 @@
+AWS_SCRIPTS_DIR="${HOME}/PATH-TO-WHERE-YOU-DOWNLOADED/aws-token-refresh"
+
+AWS_CONF_DIR="${HOME}/.aws"
+
+clear_aws_env ()
+{
+    unset AWS_SECURITY_TOKEN_EXPIRATION
+    unset AWS_SESSION_TOKEN
+    unset ADMIN_AWS_SECURITY_TOKEN
+    unset AWS_MFA_SN
+    unset ADMIN_AWS_MFA_SN
+    unset ADMIN_AWS_KEY
+    unset ADMIN_AWS_SECRET
+    unset ADMIN_AWS_KEY_ROOT
+    unset ADMIN_AWS_SECRET_ROOT
+    unset ADMIN_AWS_ACCT
+    unset AWS_ACCESS_KEY_ID
+    unset AWS_SECRET_ACCESS_KEY
+    unset AWS_SECURITY_TOKEN
+}
+
+token ()
+{
+    # Note: If no argument given, just lists the available profile names
+    "${AWS_SCRIPTS_DIR}/aws-token-or-role-refresh.sh" token "$@"
+}
+
+
+awsenv ()
+{
+    # If no argument given, use the last generated environment variables
+    # Useful for populating credentials in multiple terminal windows quickly
+    if [ "$#" -eq 0 ]; then
+        clear_aws_env
+        # shellcheck disable=SC1090
+        . "${AWS_CONF_DIR}/env-files/current-env.txt" && \
+        ENVNAME="${GLOBUS_ACCOUNT_NAME}"
+        echo "AWS environment variables populated for '${ENVNAME}'"
+        return
+    fi
+
+    ENVNAME="${1}"
+    if [ ! -f "${AWS_CONF_DIR}/aws-profiles/${ENVNAME}" ]; then
+       echo "No such environment"
+       return 1
+    fi
+
+    clear_aws_env
+    # shellcheck disable=SC1090
+    "${AWS_SCRIPTS_DIR}/aws-token-or-role-refresh.sh" awsenv "${ENVNAME}" && \
+    . "${AWS_CONF_DIR}/env-files/current-env.txt" && \
+    echo "AWS environment variables populated for '${ENVNAME}'"
+}
+
+list_aws_profiles()
+{
+    echo "Avaliable profiles are:"
+    find -L "${AWS_CONF_DIR}/aws-profiles" -type f ! -name '.*' | sed 's#'"${AWS_CONF_DIR}/aws-profiles"'/\(.*\)#\1#' | paste -sd ' ' -
+}

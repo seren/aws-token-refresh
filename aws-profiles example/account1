@@ -1,6 +1,7 @@
 [account1]
-# This is an example of an IAM role credentials profile called account1. These credentials are enough to request STS credentials (using MFA) that then have rights to request role credentials without using MFA. Note: the region line is optional.
-region = us-east-1
+# This is an example of an IAM role credentials profile file called account1, using an IAM role name "account1role". This uses the credentials from the "main" profile to get role session credentials.
+
+region = us-east-1   # optional
 account_id = 0987654321
-role_name = myadminrole
-master_profile = main
+role_name = myadminrole  # the IAM role name to assume.
+master_profile = main    # refers to the profile name for the IAM user used to assume this role
