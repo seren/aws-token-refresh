@@ -207,7 +207,10 @@ func_get_new_token () {
       yubikey)
         # Get an mfa token from an attached yubikey
         # For yubikey gotchas, see https://scalesec.com/blog/why-your-yubikey-wont-work-with-aws-cli/
-        MFA_TOKEN="$(ykman oath code | tr -s ' ' | cut -d ' ' -f 2)"
+        # Disable abort-on-error to handle the case of a missing yubikey
+        set +e
+        MFA_TOKEN="$(ykman oath accounts code | tr -s ' ' | cut -d ' ' -f 2)"
+        set -e
         ;;
       virtual)
         # Get an mfa token from an mfa app, if one's configured
