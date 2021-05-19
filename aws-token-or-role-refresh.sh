@@ -491,8 +491,8 @@ else
       AWS_SESSION_TOKEN_REFRESH_EPOCH="$(date -d "${AWS_SESSION_TOKEN_EXPIRATION} -${TOKEN_PREEXPIRATION_HOURS} hours" "+%s")"
     fi
     # If the session token has expired or is close to expiring, get a new one
-    if [[ $AWS_SESSION_TOKEN_REFRESH_EPOCH < $CURRENT_TIME_EPOCH ]]; then
-      log_info "The session token is no longer fresh (expires in $((("${AWS_SESSION_TOKEN_EXPIRATION_EPOCH}" - "${CURRENT_TIME_EPOCH}" ) / 60)) minutes). Getting a fresh one"
+    if [ "$AWS_SESSION_TOKEN_REFRESH_EPOCH" -lt "$CURRENT_TIME_EPOCH" ]; then
+      log_info "The session token is no longer fresh (expires in $(( ( "${AWS_SESSION_TOKEN_EXPIRATION_EPOCH}" - "${CURRENT_TIME_EPOCH}" ) / 60 )) minutes). Getting a fresh one"
       func_update_user_token "${PROFILE_NAME}"
     else
       # otherwise tell the user how long they have before it will be refreshed
