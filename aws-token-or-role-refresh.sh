@@ -114,7 +114,7 @@ function log_error {
 # Lists all the available profiles (eg. profile source files)
 func_list_profiles () {
   echo "Avaliable profiles are:"
-  ls "${CREDENTIALS_SOURCE_DIR})"
+  ls "${CREDENTIALS_SOURCE_DIR}"
   return 0
 }
 
