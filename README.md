@@ -104,7 +104,7 @@ Create profile files in `~/.aws/aws-profiles/`. These files are what are used to
 
 ## Notes
 
-- The script only modifies individual profile sections of the `credentials` file, so you can add extra profiles by hand to `credentials` without them being overwritten.
+- The script only modifies individual profile sections of the `credentials` file, so you can add extra profiles to the `credentials` file manually without them being overwritten.
 
 - The `config` file is recreated from the `credentials` file during each run, so any customization should be done in the `credentials` file.
 
