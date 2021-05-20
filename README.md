@@ -45,10 +45,10 @@ Run the `setup.sh` script or perform the following four steps manually:
 
 3. In `profile-additions.sh`, update the `AWS_SCRIPTS_DIR` value file to the directory containing the scripts (ex. `${HOME}/aws-token-refresh`).
 	
-4. In your shell's login profile (usually `.bash_profile`, if you use bash), source `profile-additions.sh`:
+4. In your shell's login profile (usually `.bash_profile`, if you use bash), source `profile-additions.source_me`:
 	
   ~~~
-  echo 'source "${HOME}/aws-token-refresh/profile-additions.sh"' >> ${HOME}/.profile
+  echo 'source "${HOME}/aws-token-refresh/profile-additions.source_me"' >> ${HOME}/.profile
   ~~~
 
 
