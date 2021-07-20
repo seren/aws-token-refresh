@@ -209,7 +209,7 @@ func_get_new_token () {
         # For yubikey gotchas, see https://scalesec.com/blog/why-your-yubikey-wont-work-with-aws-cli/
         # Disable abort-on-error to handle the case of a missing yubikey
         set +e
-        MFA_TOKEN="$(ykman oath accounts code | tr -s ' ' | cut -d ' ' -f 2)"
+        MFA_TOKEN="$(ykman oath accounts code ${PROFILE_NAME} | tr -s ' ' | cut -d ' ' -f 2)"
         set -e
         ;;
       virtual)
