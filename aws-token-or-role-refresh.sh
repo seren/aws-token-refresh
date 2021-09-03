@@ -492,16 +492,16 @@ else
     fi
     # If the session token has expired or is close to expiring, get a new one
     if [ "$AWS_SESSION_TOKEN_REFRESH_EPOCH" -lt "$CURRENT_TIME_EPOCH" ]; then
-      log_info "The session token is no longer fresh (expires in $(( ( "${AWS_SESSION_TOKEN_EXPIRATION_EPOCH}" - "${CURRENT_TIME_EPOCH}" ) / 60 )) minutes). Getting a fresh one"
+      log_info "The session token is no longer fresh (expires in $(( ( $AWS_SESSION_TOKEN_EXPIRATION_EPOCH - $CURRENT_TIME_EPOCH ) / 60 )) minutes). Getting a fresh one"
       func_update_user_token "${PROFILE_NAME}"
     else
       # otherwise tell the user how long they have before it will be refreshed
-      REFRESH_SEC=$((("${AWS_SESSION_TOKEN_REFRESH_EPOCH}" - "${CURRENT_TIME_EPOCH}") % 60 ))
-      REFRESH_MIN=$((("${AWS_SESSION_TOKEN_REFRESH_EPOCH}" - "${CURRENT_TIME_EPOCH}") / 60 % 60))
-      REFRESH_HR=$((("${AWS_SESSION_TOKEN_REFRESH_EPOCH}" - "${CURRENT_TIME_EPOCH}") / 3600))
-      EXPIRE_SEC=$((("${AWS_SESSION_TOKEN_EXPIRATION_EPOCH}" - "${CURRENT_TIME_EPOCH}") % 60))
-      EXPIRE_MIN=$((("${AWS_SESSION_TOKEN_EXPIRATION_EPOCH}" - "${CURRENT_TIME_EPOCH}") / 60 % 60))
-      EXPIRE_HR=$((("${AWS_SESSION_TOKEN_EXPIRATION_EPOCH}" - "${CURRENT_TIME_EPOCH}") / 3600))
+      REFRESH_SEC=$((($AWS_SESSION_TOKEN_REFRESH_EPOCH - $CURRENT_TIME_EPOCH) % 60 ))
+      REFRESH_MIN=$((($AWS_SESSION_TOKEN_REFRESH_EPOCH - $CURRENT_TIME_EPOCH) / 60 % 60))
+      REFRESH_HR=$((($AWS_SESSION_TOKEN_REFRESH_EPOCH - $CURRENT_TIME_EPOCH) / 3600))
+      EXPIRE_SEC=$((($AWS_SESSION_TOKEN_EXPIRATION_EPOCH - $CURRENT_TIME_EPOCH) % 60))
+      EXPIRE_MIN=$((($AWS_SESSION_TOKEN_EXPIRATION_EPOCH - $CURRENT_TIME_EPOCH) / 60 % 60))
+      EXPIRE_HR=$((($AWS_SESSION_TOKEN_EXPIRATION_EPOCH - $CURRENT_TIME_EPOCH) / 3600))
       log_info "Everything looks good. Reusing existing session token (fresh for ${REFRESH_HR}:${REFRESH_MIN}:${REFRESH_SEC}, expires in ${EXPIRE_HR}:${EXPIRE_MIN}:${EXPIRE_SEC})"
     fi
   fi
