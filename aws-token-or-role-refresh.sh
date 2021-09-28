@@ -122,7 +122,7 @@ func_list_profiles () {
 func_get_value_from_profile_source () {
   key_name=${1}
   sourcefile=${2}
-  RETVAL=$(sed -n 's/'"${key_name}"' = \(.*\)/\1/p' "${sourcefile}")
+  RETVAL=$(sed -n 's/^'"${key_name}"' = \(.*\)/\1/p' "${sourcefile}")
   if [ -z "${RETVAL}" ]; then
     log_debug "WARNING: Couldn't find ${key_name} in ${sourcefile}"
   fi
@@ -401,6 +401,7 @@ func_export_to_env_file () {
   # shell sourceable version
   (
     echo "export GLOBUS_ACCOUNT_NAME=${PN}"
+    echo "export AWS_PROFILE=${PN}"
     sed -e '/./{H;$!d;}' -e 'x;/\['"${PN}"'\]/!d;' "${CREDENTIALS_FILE}" | sed -n 's/^region = \(.*\)/export AWS_DEFAULT_REGION=\1/p'
     sed -e '/./{H;$!d;}' -e 'x;/\['"${PN}"'\]/!d;' "${CREDENTIALS_FILE}" | sed -n 's/^account_id = \(.*\)/export AWS_ACCT=\1/p'
     sed -e '/./{H;$!d;}' -e 'x;/\['"${PN}"'\]/!d;' "${CREDENTIALS_FILE}" | sed -n 's/^aws_access_key_id = \(.*\)/export AWS_ACCESS_KEY_ID=\1/p'
